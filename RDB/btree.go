@@ -65,3 +65,6 @@ func (node BNode) getOffSet(idx uint16) uint16 {
 	return binary.LittleEndian.Uint16(node[offsetPos(node, idx):])
 }
 
+func (node BNode) setOffset(idx uint16, val uint16) {
+	binary.LittleEndian.PutUint16(node[offsetPos(node, idx):], val)
+}
