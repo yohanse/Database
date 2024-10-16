@@ -75,3 +75,13 @@ func (node BNode) KvPos(idx uint16) uint16 {
 	}
 	return HEADER + 8*node.nkeys() + 2*node.nkeys() + node.getOffSet(idx)
 }
+
+func (node BNode) getKey(idx uint16) []byte {
+	if idx < 1 || idx > node.nkeys() {
+		panic("index out of range")
+	}
+
+	pos := node.KvPos(idx)
+	klen := binary.LittleEndian.Uint16(node[pos:])
+	return node[pos + 4:][:klen]
+}
