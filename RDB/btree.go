@@ -85,3 +85,17 @@ func (node BNode) getKey(idx uint16) []byte {
 	klen := binary.LittleEndian.Uint16(node[pos:])
 	return node[pos + 4:][:klen]
 }
+
+func (node BNode) getVal(idx uint16) []byte {
+	if idx < 1 || idx > node.nkeys() {
+		panic("index out of range")
+	}
+
+	pos := node.KvPos(idx)
+	klen := binary.LittleEndian.Uint16(node[pos:])
+	vlen := binary.LittleEndian.Uint16(node[pos + 2:])
+
+	return node[pos + 4 + klen:][:vlen]
+}
+
+
