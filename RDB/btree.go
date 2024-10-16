@@ -68,3 +68,10 @@ func (node BNode) getOffSet(idx uint16) uint16 {
 func (node BNode) setOffset(idx uint16, val uint16) {
 	binary.LittleEndian.PutUint16(node[offsetPos(node, idx):], val)
 }
+
+func (node BNode) KvPos(idx uint16) uint16 {
+	if idx < 1 || idx > node.nkeys() {
+		panic("index out of range")
+	}
+	return HEADER + 8*node.nkeys() + 2*node.nkeys() + node.getOffSet(idx)
+}
