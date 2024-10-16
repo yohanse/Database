@@ -98,4 +98,7 @@ func (node BNode) getVal(idx uint16) []byte {
 	return node[pos + 4 + klen:][:vlen]
 }
 
+func (node BNode) nbytes() uint16 {
+	return node.KvPos(node.nkeys())
+}
 
