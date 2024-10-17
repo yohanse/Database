@@ -1,6 +1,7 @@
 package rdb
 
 import (
+	"bytes"
 	"encoding/binary"
 )
 
@@ -102,3 +103,18 @@ func (node BNode) nbytes() uint16 {
 	return node.KvPos(node.nkeys())
 }
 
+
+func nodeLookupLE(node BNode, key []byte) uint16 {
+	nkeys := node.nkeys()
+	found := uint16(0)
+
+	for i := uint16(1); i < nkeys; i++ {
+		cmp := bytes.Compare(node.getKey(i), key)
+
+		if cmp > 0 {
+			break
+		}
+		found = i
+	}
+	return found
+}
