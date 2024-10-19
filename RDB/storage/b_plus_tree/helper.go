@@ -86,6 +86,7 @@ func (node BNode) getVal(idx uint16) []byte {
 	return node[pos + 4 + klen:][:vlen]
 }
 
+// It also conveniently returns the node size (used space) with an off-by-one lookup.
 func (node BNode) nbytes() uint16 {
 	return node.KvPos(node.nkeys())
 }
