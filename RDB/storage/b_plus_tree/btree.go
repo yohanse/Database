@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 )
-
 type BTree struct {
     // pointer (a nonzero page number)
     root uint64
@@ -14,22 +13,21 @@ type BTree struct {
     del func(uint64)        // deallocate a page
 }
 
-
-
-
+// returns the first kid node whose range intersects the key. (kid[i] <= key)
 func nodeLookupLE(node BNode, key []byte) uint16 {
-	nkeys := node.nkeys()
-	found := uint16(0)
+	right := node.nkeys()
+    left := uint16(0)
 
-	for i := uint16(1); i < nkeys; i++ {
-		cmp := bytes.Compare(node.getKey(i), key)
-
+	for left < right {
+		mid := (left + right + 1) / 2
+		cmp := bytes.Compare(node.getKey(mid), key)
 		if cmp > 0 {
-			break
+			right = mid - 1
+		} else {
+			left = mid
 		}
-		found = i
 	}
-	return found
+	return left
 }
 
 
