@@ -1,5 +1,8 @@
 package rdb
 
+import (
+	"bytes"
+)
 type BTree struct {
     // pointer (a nonzero page number)
     root uint64
@@ -24,106 +27,6 @@ func nodeLookupLE(node BNode, key []byte) uint16 {
 		}
 	}
 	return left
-}
-
-
-
-
-func nodeReplaceKidN(tree *BTree, new BNode, old BNode, idx uint16, kids ...BNode) {
-	inc := uint16(len(kids))
-
-	new.setHeaders(BNODE_NODE, old.nkeys() + inc - 1)
-	nodeAppendRange(new, old, 0, 0, idx)
-	for i, node := range kids {
-		nodeAppendKV(new, idx+uint16(i), tree.new(node), node.getKey(0), nil)
-	}
-	nodeAppendRange(new, old, idx+inc, idx+1, old.nkeys()-(idx+1))
-}
-
-func nodeSplit2(left BNode, right BNode, old BNode) {
-	nkeys := old.nkeys()
-	mid := nkeys / 2
-
-	nodeAppendRange(left, old, 0, 0, mid)
-	nodeAppendRange(right, old, 0, mid, nkeys - mid)
-}
-
-func nodeSplit3(old BNode) (uint16, [3]BNode) {
-	if old.nbytes() <= BTREE_PAGE_SIZE {
-		old = old[:BTREE_PAGE_SIZE]
-		return 1, [3]BNode{old}
-	}
-
-	left := BNode(make([]byte, 2*BTREE_PAGE_SIZE))
-	right := BNode(make([]byte, BTREE_PAGE_SIZE))
-
-	nodeSplit2(left, right, old)
-
-	if left.nbytes() <= BTREE_PAGE_SIZE {
-		left = left[:BTREE_PAGE_SIZE]
-		return 2, [3]BNode{left, right}
-	}
-
-	leftleft := BNode(make([]byte, 2*BTREE_PAGE_SIZE))
-	middle := BNode(make([]byte, BTREE_PAGE_SIZE))
-
-	nodeSplit2(leftleft, middle, left)
-	return 3, [3]BNode{leftleft, middle, right}
-}
-
-func treeInsert(tree *BTree, node BNode, key []byte, val []byte) BNode {
-	new := BNode(make([]byte, 2*BTREE_PAGE_SIZE))
-
-	idx := nodeLookupLE(node, key)
-	switch node.btype() {
-	case BNODE_LEAF:
-	if bytes.Equal(key, node.getKey(idx)) {
-		leafUpdate(new, node, idx, key, val)
-	} else {
-		leafInsert(new, node, idx+1, key, val)
-	}
-	case BNODE_NODE:
-		nodeInsert(tree, new, node, idx, key, val)
-	default:
-		panic("bad node!")
-	}
-	return new
-}
-
-func nodeInsert(tree *BTree, new BNode, node BNode, idx uint16, key []byte, val []byte) {
-	kptr := node.getPtr(idx)
-	knode := treeInsert(tree, tree.get(kptr), key, val)
-	nsplit, split := nodeSplit3(knode)
-	tree.del(kptr)
-	nodeReplaceKidN(tree, new, node, idx, split[:nsplit]...)
-}
-
-func (tree *BTree) Insert(key []byte, val []byte) {
-	if tree.root == 0 {
-		root := BNode(make([]byte, BTREE_PAGE_SIZE))
-		root.setHeaders(BNODE_LEAF, 1)
-
-		nodeAppendKV(root, 0, 0, nil, nil)
-		nodeAppendKV(root, 1, 0, key, val)
-		tree.root = tree.new(root)
-		return 
-	}
-
-	node := treeInsert(tree, tree.get(tree.root), key, val)
-	nsplit, split := nodeSplit3(node)
-	tree.del(tree.root)
-	
-	if nsplit > 1 {
-		root := BNode(make([]byte, BTREE_PAGE_SIZE))
-		root.setHeaders(BNODE_NODE, nsplit)
-		for i, knode := range split[:nsplit] {
-			ptr, key := tree.new(knode), knode.getKey(0)
-			nodeAppendKV(root, uint16(i), ptr, key, nil)
-		}
-		tree.root = tree.new(root)
-	} else {
-		tree.root = tree.new(split[0])
-	}
 }
 
 func leafDelete(new BNode, old BNode, idx uint16)
