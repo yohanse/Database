@@ -119,12 +119,21 @@ func nodeLookupLE(node BNode, key []byte) uint16 {
 	return found
 }
 
+
 func leafInsert(new BNode, old BNode, idx uint16, key []byte, val []byte) {
 	new.setHeaders(BNODE_LEAF, old.nkeys() + 1)
 	nodeAppendRange(new, old, 0, 0, idx)
 	nodeAppendKV(new, idx, 0, key, val)
 	nodeAppendRange(new, old, idx+1, idx, old.nkeys()-idx)
 }
+
+func leafUpdate(new BNode, old BNode, idx uint16, key []byte, val []byte) {
+	new.setHeaders(BNODE_LEAF, old.nkeys() + 1)
+	nodeAppendRange(new, old, 0, 0, idx)
+	nodeAppendKV(new, idx, 0, key, val)
+	nodeAppendRange(new, old, idx+1, idx+1, old.nkeys()-idx)
+}
+
 
 func nodeAppendKV(new BNode, idx uint16, ptr uint64, key []byte, val []byte) {
 	new.setPtr(idx, ptr)
