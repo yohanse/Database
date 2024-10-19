@@ -270,4 +270,23 @@ func (tree *BTree) Insert(key []byte, val []byte) {
 func (tree *BTree) Delete(key []byte) bool {
 
 }
+
+func shouldMerge(tree *BTree, node BNode, idx uint16, updated BNode) (int, BNode){
+	if idx > 0 {
+		sibling := BNode(tree.get(node.getPtr(idx-1)))
+		merged := sibling.nbytes() + updated.nbytes() - HEADER
+		if merged <= BTREE_PAGE_SIZE {
+			return -1, sibling
+		}
+	}
+
+	if idx + 1 < node.nkeys() {
+		sibling := BNode(tree.get(node.getPtr(idx+1)))
+		merged := sibling.nbytes() + updated.nbytes() - HEADER
+		if merged <= BTREE_PAGE_SIZE {
+			return 1, sibling
+		}
+	}
+	return 0, BNode{}
+}
 	
