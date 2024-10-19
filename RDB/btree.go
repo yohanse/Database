@@ -272,6 +272,10 @@ func (tree *BTree) Delete(key []byte) bool {
 }
 
 func shouldMerge(tree *BTree, node BNode, idx uint16, updated BNode) (int, BNode){
+	if updated.nbytes() > BTREE_PAGE_SIZE/4 {
+		return 0, BNode{}
+	}
+
 	if idx > 0 {
 		sibling := BNode(tree.get(node.getPtr(idx-1)))
 		merged := sibling.nbytes() + updated.nbytes() - HEADER
