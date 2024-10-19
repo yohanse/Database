@@ -137,7 +137,7 @@ func nodeAppendKV(new BNode, idx uint16, ptr uint64, key []byte, val []byte) {
 	copy(new[pos + 4:], key)
 	copy(new[pos + 4 + uint16(len(key)):], val)
 
-	new.setOffset(idx + 1, new.getOffSet(idx) + 4 + uint16(len(key)) + uint16(len(val)))
+	new.setOffset(idx + 1, new.getOffSet(idx) + 4 + uint16((len(key)+len(val))))
 }
 
 func nodeAppendRange(new BNode, old BNode, dstNew uint16, srcOld uint16, n uint16) {
@@ -154,9 +154,10 @@ func nodeAppendRange(new BNode, old BNode, dstNew uint16, srcOld uint16, n uint1
 		copy(new[pos+4:], key)
 		copy(new[pos+4+uint16(len(key)):], val)
 
-		new.setOffset(dstNew + 1, new.getOffSet(dstNew)+4+uint16((len(key)+len(val))))
+		new.setOffset(dstNew + 1, new.getOffSet(dstNew) + 4 + uint16((len(key)+len(val))))
 
 		dstNew += 1
 		srcOld += 1
 	}
 }
+
