@@ -182,7 +182,11 @@ func nodeReplaceKidN(tree *BTree, new BNode, old BNode, idx uint16, kids ...BNod
 }
 
 func nodeSplit2(left BNode, right BNode, old BNode) {
-	
+	nkeys := old.nkeys()
+	mid := nkeys / 2
+
+	nodeAppendRange(left, old, 0, 0, mid)
+	nodeAppendRange(right, old, 0, mid, nkeys - mid)
 }
 
 func nodeSplit3(old BNode) (uint16, [3]BNode) {
