@@ -191,3 +191,11 @@ func treeInsert(tree *BTree, node BNode, key []byte, val []byte) BNode {
 	}
 	return new
 }
+
+func nodeInsert(tree *BTree, new BNode, node BNode, idx uint16, key []byte, val []byte) {
+	kptr := node.getPtr(idx)
+	knode := treeInsert(tree, tree.get(kptr), key, val)
+	nsplit, split := nodeSplit3(knode)
+	tree.del(kptr)
+	nodeReplaceKidN(tree, new, node, idx, split[:nsplit]...)
+}
