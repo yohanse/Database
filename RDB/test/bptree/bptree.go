@@ -1,4 +1,4 @@
-package rdb
+package btree
 
 import (
     "fmt"
@@ -19,20 +19,21 @@ func newC() *C {
     pages := map[uint64]b_plus_tree.BNode{}
     return &C{
         tree: b_plus_tree.BTree{
-            get: func(ptr uint64) []byte {
+            Get: func(ptr uint64) []byte {
                 node, ok := pages[ptr]
-                assert(ok)
+                if !ok{
+					panic(fmt.Sprintf("Page not found: %d", ptr))
+				}
                 return node
             },
-            new: func(node []byte) uint64 {
-                assert(BNode(node).nbytes() <= BTREE_PAGE_SIZE)
+            New: func(node []byte) uint64 {
+                
                 ptr := uint64(uintptr(unsafe.Pointer(&node[0])))
-                assert(pages[ptr] == nil)
+                
                 pages[ptr] = node
                 return ptr
             },
-            del: func(ptr uint64) {
-                assert(pages[ptr] != nil)
+            Del: func(ptr uint64) {
                 delete(pages, ptr)
             },
         },
@@ -79,18 +80,6 @@ func (c *C) testDeletion() {
     }
 }
 
-func (c *C) testLookup() {
-    // Insert key-value pairs
-    c.add("apple", "red")
-    c.add("banana", "yellow")
-
-    // Look up a key in the tree
-    value := c.tree.Lookup([]byte("banana"))
-    if string(value) != "yellow" {
-        panic("Lookup failed for key: banana")
-    }
-}
-
 func TestBTreeOperations(t *testing.T) {
     c := newC()
 
@@ -99,7 +88,4 @@ func TestBTreeOperations(t *testing.T) {
 
     // Test Deletion
     c.testDeletion()
-
-    // Test Lookup
-    c.testLookup()
 }

@@ -60,7 +60,7 @@ func nodeReplaceKidN(tree *BTree, new BNode, old BNode, idx uint16, kids ...BNod
 	new.setHeaders(BNODE_NODE, old.nkeys() + inc - 1)
 	nodeAppendRange(new, old, 0, 0, idx)
 	for i, node := range kids {
-		nodeAppendKV(new, idx+uint16(i), tree.new(node), node.getKey(0), nil)
+		nodeAppendKV(new, idx+uint16(i), tree.New(node), node.getKey(0), nil)
 	}
 	nodeAppendRange(new, old, idx+inc, idx+1, old.nkeys()-(idx+1))
 }
@@ -117,36 +117,36 @@ func treeInsert(tree *BTree, node BNode, key []byte, val []byte) BNode {
 
 func nodeInsert(tree *BTree, new BNode, node BNode, idx uint16, key []byte, val []byte) {
 	kptr := node.getPtr(idx)
-	knode := treeInsert(tree, tree.get(kptr), key, val)
+	knode := treeInsert(tree, tree.Get(kptr), key, val)
 	nsplit, split := nodeSplit3(knode)
-	tree.del(kptr)
+	tree.Del(kptr)
 	nodeReplaceKidN(tree, new, node, idx, split[:nsplit]...)
 }
 
 func (tree *BTree) Insert(key []byte, val []byte) {
-	if tree.root == 0 {
+	if tree.Root == 0 {
 		root := BNode(make([]byte, BTREE_PAGE_SIZE))
 		root.setHeaders(BNODE_LEAF, 1)
 
 		nodeAppendKV(root, 0, 0, nil, nil)
 		nodeAppendKV(root, 1, 0, key, val)
-		tree.root = tree.new(root)
+		tree.Root = tree.New(root)
 		return 
 	}
 
-	node := treeInsert(tree, tree.get(tree.root), key, val)
+	node := treeInsert(tree, tree.Get(tree.Root), key, val)
 	nsplit, split := nodeSplit3(node)
-	tree.del(tree.root)
+	tree.Del(tree.Root)
 	
 	if nsplit > 1 {
 		root := BNode(make([]byte, BTREE_PAGE_SIZE))
 		root.setHeaders(BNODE_NODE, nsplit)
 		for i, knode := range split[:nsplit] {
-			ptr, key := tree.new(knode), knode.getKey(0)
+			ptr, key := tree.New(knode), knode.getKey(0)
 			nodeAppendKV(root, uint16(i), ptr, key, nil)
 		}
-		tree.root = tree.new(root)
+		tree.Root = tree.New(root)
 	} else {
-		tree.root = tree.new(split[0])
+		tree.Root = tree.New(split[0])
 	}
 }

@@ -39,7 +39,7 @@ func shouldMerge(tree *BTree, node BNode, idx uint16, updated BNode) (int, BNode
 	}
 
 	if idx > 0 {
-		sibling := BNode(tree.get(node.getPtr(idx-1)))
+		sibling := BNode(tree.Get(node.getPtr(idx-1)))
 		merged := sibling.nbytes() + updated.nbytes() - HEADER
 		if merged <= BTREE_PAGE_SIZE {
 			return -1, sibling
@@ -47,7 +47,7 @@ func shouldMerge(tree *BTree, node BNode, idx uint16, updated BNode) (int, BNode
 	}
 
 	if idx + 1 < node.nkeys() {
-		sibling := BNode(tree.get(node.getPtr(idx+1)))
+		sibling := BNode(tree.Get(node.getPtr(idx+1)))
 		merged := sibling.nbytes() + updated.nbytes() - HEADER
 		if merged <= BTREE_PAGE_SIZE {
 			return 1, sibling
@@ -76,7 +76,7 @@ func treeDelete(tree *BTree, node BNode, key []byte) BNode {
 // delete a key from an internal node; part of the treeDelete()
 func nodeDelete(tree *BTree, node BNode, idx uint16, key []byte) BNode {
 	kptr := node.getPtr(idx)
-	knode := tree.get(kptr)
+	knode := tree.Get(kptr)
 
 	updated := treeDelete(tree, knode, key)
 
@@ -84,7 +84,7 @@ func nodeDelete(tree *BTree, node BNode, idx uint16, key []byte) BNode {
 		return BNode{}
 	}
 
-	tree.del(kptr)
+	tree.Del(kptr)
 
 	new := BNode(make([]byte, BTREE_PAGE_SIZE))
 
@@ -94,14 +94,14 @@ func nodeDelete(tree *BTree, node BNode, idx uint16, key []byte) BNode {
 		case mergeDir < 0:
 			merged := BNode(make([]byte, BTREE_PAGE_SIZE))
 			nodeMerge(merged, sibling, updated)
-			tree.del(node.getPtr(idx-1))
-			nodeReplace2Kid(new, node, idx - 1, tree.new(merged), merged.getKey(0))
+			tree.Del(node.getPtr(idx-1))
+			nodeReplace2Kid(new, node, idx - 1, tree.New(merged), merged.getKey(0))
 
 		case mergeDir > 0:
 			merged := BNode(make([]byte, BTREE_PAGE_SIZE))
 			nodeMerge(merged, updated, sibling)
-			tree.del(node.getPtr(idx+1))
-			nodeReplace2Kid(new, node, idx, tree.new(merged), merged.getKey(0))
+			tree.Del(node.getPtr(idx+1))
+			nodeReplace2Kid(new, node, idx, tree.New(merged), merged.getKey(0))
 		
 		case mergeDir == 0 && updated.nkeys() == 0:
 			new.setHeaders(BNODE_NODE, 0)
@@ -113,19 +113,19 @@ func nodeDelete(tree *BTree, node BNode, idx uint16, key []byte) BNode {
 }
 
 func (tree *BTree) Delete(key []byte) (bool, error) {
-    if tree.root == 0 {
+    if tree.Root == 0 {
         return false, fmt.Errorf("tree is empty")
     }
     
-    updatedRoot := treeDelete(tree, tree.get(tree.root), key)
+    updatedRoot := treeDelete(tree, tree.Get(tree.Root), key)
     
     if len(updatedRoot) == 0 {
         root := BNode(make([]byte, BTREE_PAGE_SIZE))
         root.setHeaders(BNODE_LEAF, 0)
-        tree.root = tree.new(root)
+        tree.Root = tree.New(root)
     } else {
         // If the updated root is not empty, set it as the new root
-        tree.root = tree.new(updatedRoot)
+        tree.Root = tree.New(updatedRoot)
     }
 
     return true, nil
