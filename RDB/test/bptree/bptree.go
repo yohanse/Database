@@ -4,42 +4,35 @@ import (
     "fmt"
     "testing"
     "unsafe"
+	"rdb/storage/b_plus_tree"
 )
 
 // Assuming BNode and BTree are defined similarly to your original code.
 
 type C struct {
-    tree  BTree
+    tree  b_plus_tree.BTree
     ref   map[string]string // the reference data
-    pages map[uint64]BNode  // in-memory pages
+    pages map[uint64]b_plus_tree.BNode  // in-memory pages
 }
 
 func newC() *C {
-    pages := map[uint64]BNode{}
+    pages := map[uint64]b_plus_tree.BNode{}
     return &C{
-        tree: BTree{
+        tree: b_plus_tree.BTree{
             get: func(ptr uint64) []byte {
                 node, ok := pages[ptr]
-                if !ok {
-                    panic("node not found")
-                }
+                assert(ok)
                 return node
             },
             new: func(node []byte) uint64 {
-                if BNode(node).nbytes() > BTREE_PAGE_SIZE {
-                    panic("node size exceeds page size")
-                }
+                assert(BNode(node).nbytes() <= BTREE_PAGE_SIZE)
                 ptr := uint64(uintptr(unsafe.Pointer(&node[0])))
-                if pages[ptr] != nil {
-                    panic("node already exists")
-                }
+                assert(pages[ptr] == nil)
                 pages[ptr] = node
                 return ptr
             },
             del: func(ptr uint64) {
-                if pages[ptr] == nil {
-                    panic("node not found")
-                }
+                assert(pages[ptr] != nil)
                 delete(pages, ptr)
             },
         },

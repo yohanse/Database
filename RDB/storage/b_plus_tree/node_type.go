@@ -1,4 +1,4 @@
-package rdb
+package b_plus_tree
 
 const (
 	BNODE_NODE = 1
