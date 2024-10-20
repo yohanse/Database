@@ -45,6 +45,7 @@ func newC() *C {
 func (c *C) add(key string, val string) {
     c.tree.Insert([]byte(key), []byte(val))
     c.ref[key] = val // reference data
+    
 }
 
 func (c *C) testInsertion() {
@@ -53,7 +54,6 @@ func (c *C) testInsertion() {
 
     for i := range keys {
         c.add(keys[i], vals[i])
-        fmt.Println(keys[i], vals[i])
     }
 
     for i := range keys {
@@ -61,31 +61,32 @@ func (c *C) testInsertion() {
             panic(fmt.Sprintf("Insertion failed for key: %s", keys[i]))
         }
     }
+    c.tree.PrintAll(c.tree.Get(c.tree.Root))
 }
 
 func (c *C) testDeletion() {
     // Initial insertion of key-value pairs
     c.add("apple", "red")
     c.add("banana", "yellow")
-
+    c.tree.PrintAll(c.tree.Get(c.tree.Root))
     // Delete key "apple"
     success, err := c.tree.Delete([]byte("apple"))
     if !success || err != nil {
         panic("Deletion failed")
     }
-
+    c.tree.PrintAll(c.tree.Get(c.tree.Root))
     success1, err1 := c.tree.Delete([]byte("banana"))
     if !success1 || err1 != nil {
         panic("Deletion failed")
     }
-    
+    c.tree.PrintAll(c.tree.Get(c.tree.Root))
 }
 
 func TestBTreeOperations(t *testing.T) {
     c := newC()
 
-    // // Test Insertion
-    // c.testInsertion()
+    // Test Insertion
+    c.testInsertion()
 
     // Test Deletion
     c.testDeletion()

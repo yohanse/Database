@@ -9,6 +9,7 @@ import (
 func leafInsert(new BNode, old BNode, idx uint16, key []byte, val []byte) {
 	new.setHeaders(BNODE_LEAF, old.nkeys() + 1)
 	nodeAppendRange(new, old, 0, 0, idx)
+	fmt.Println("leafInsert: ", key, val)
 	nodeAppendKV(new, idx, 0, key, val)
 	nodeAppendRange(new, old, idx+1, idx, old.nkeys()-idx)
 }
@@ -25,8 +26,8 @@ func nodeAppendKV(new BNode, idx uint16, ptr uint64, key []byte, val []byte) {
 
 	pos := new.KvPos(idx)
 
-	binary.LittleEndian.AppendUint16(new[pos:], uint16(len(key)))
-	binary.LittleEndian.AppendUint16(new[pos + 2:], uint16(len(val)))
+	binary.LittleEndian.PutUint16(new[pos:], uint16(len(key)))
+	binary.LittleEndian.PutUint16(new[pos + 2:], uint16(len(val)))
 
 	copy(new[pos + 4:], key)
 	copy(new[pos + 4 + uint16(len(key)):], val)
@@ -124,8 +125,8 @@ func nodeInsert(tree *BTree, new BNode, node BNode, idx uint16, key []byte, val 
 }
 
 func (tree *BTree) Insert(key []byte, val []byte) {
+	fmt.Println("Inserting key: ", key, "Value: ", val)
 	if tree.Root == 0 {
-		fmt.Println("Root is 0")
 		root := BNode(make([]byte, BTREE_PAGE_SIZE))
 		root.setHeaders(BNODE_LEAF, 2)
 		
@@ -134,7 +135,6 @@ func (tree *BTree) Insert(key []byte, val []byte) {
 		tree.Root = tree.New(root)
 		return 
 	}
-	fmt.Println("root", tree.Root)
 	node := treeInsert(tree, tree.Get(tree.Root), key, val)
 	nsplit, split := nodeSplit3(node)
 	tree.Del(tree.Root)
