@@ -1,5 +1,7 @@
 package kvstore
 
+// createFileSync opens or creates a file and ensures the directory is synchronized to disk.
+
 func createFileSync(file string) (int, error) {
     // obtain the directory fd
     flags := os.O_RDONLY | syscall.O_DIRECTORY
