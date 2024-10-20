@@ -21,3 +21,9 @@ page struct:
 
     temp: A slice of byte slices ([][]byte). These are newly allocated pages in memory that have not 
     yet been flushed to disk.
+
+
+
+func (db *KV) Open() error
+    Usage: When a database application starts, it needs to connect to the database file (or create 
+    it if it doesn't exist).
