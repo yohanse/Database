@@ -27,3 +27,6 @@ page struct:
 func (db *KV) Open() error
     Usage: When a database application starts, it needs to connect to the database file (or create 
     it if it doesn't exist).
+
+func (db *KV) Get(key []byte) ([]byte, bool)
+        This function retrieves the value associated with a given key from the B+ tree structure.
