@@ -34,6 +34,8 @@ type KV struct {
 	fd int
 	tree b_plus_tree.BTree
 
+	failed bool
+
     mmap struct {
         total  int      // mmap size, can be larger than the file size
         chunks [][]byte // multiple mmaps, can be non-continuous
