@@ -1,3 +1,8 @@
+package kvstore
+
+// updateFile writes new nodes to the disk, synchronizes the file to ensure data integrity,
+// updates the root pointer atomically, and flushes changes to make them persistent.
+
 func updateFile(db *KV) error {
     // 1. Write new nodes.
     if err := writePages(db); err != nil {
