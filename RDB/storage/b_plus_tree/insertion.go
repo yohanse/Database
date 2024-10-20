@@ -122,7 +122,7 @@ func nodeInsert(tree *BTree, new BNode, node BNode, idx uint16, key []byte, val 
 	nodeReplaceKidN(tree, new, node, idx, split[:nsplit]...)
 }
 
-func (tree *BTree) Insert(key []byte, val []byte) {
+func (tree *BTree) Insert(key []byte, val []byte) error{
 	if tree.Root == 0 {
 		root := BNode(make([]byte, BTREE_PAGE_SIZE))
 		root.setHeaders(BNODE_LEAF, 2)
@@ -130,7 +130,7 @@ func (tree *BTree) Insert(key []byte, val []byte) {
 		nodeAppendKV(root, 0, 0, nil, nil)
 		nodeAppendKV(root, 1, 0, key, val)
 		tree.Root = tree.New(root)
-		return 
+		return nil
 	}
 	node := treeInsert(tree, tree.Get(tree.Root), key, val)
 	nsplit, split := nodeSplit3(node)
@@ -147,4 +147,5 @@ func (tree *BTree) Insert(key []byte, val []byte) {
 	} else {
 		tree.Root = tree.New(split[0])
 	}
+	return nil
 }

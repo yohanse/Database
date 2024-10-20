@@ -5,6 +5,10 @@ package kvstore
 // and ensuring that the changes are persisted to the underlying storage (file on disk). 
 
 func (db *KV) Set(key []byte, val []byte) error {
-    db.tree.Insert(key, val)
-    return updateFile(db)
+    meta := saveMeta(db) // save the in-memory state (tree root)
+	err := db.tree.Insert(key, val)
+    if err != nil {
+        return err // length limit
+    }
+    return updateOrRevert(db, meta)
 }
