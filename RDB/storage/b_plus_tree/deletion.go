@@ -8,7 +8,7 @@ import (
 func leafDelete(new BNode, old BNode, idx uint16) {
 	new.setHeaders(BNODE_LEAF, old.nkeys() - 1)
 	nodeAppendRange(new, old, 0, 0, idx)
-	nodeAppendRange(new, old, idx, idx+1, old.nkeys()-idx)
+	nodeAppendRange(new, old, idx, idx+1, old.nkeys()-idx-1)
 }
 
 // merge 2 nodes into 1
@@ -60,9 +60,11 @@ func shouldMerge(tree *BTree, node BNode, idx uint16, updated BNode) (int, BNode
 func treeDelete(tree *BTree, node BNode, key []byte) BNode {
 	new := BNode(make([]byte, BTREE_PAGE_SIZE))
 	idx := nodeLookupLE(node, key)
-
+	fmt.Println(idx, node.nkeys())
+	fmt.Println(node.btype())
 	switch node.btype() {
 		case BNODE_LEAF:
+			fmt.Println("Leaf")
 			leafDelete(new, node, idx)
 		case BNODE_NODE:
 			nodeDelete(tree, node, idx, key)

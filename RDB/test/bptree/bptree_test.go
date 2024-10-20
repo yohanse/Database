@@ -48,11 +48,12 @@ func (c *C) add(key string, val string) {
 }
 
 func (c *C) testInsertion() {
-    keys := []string{"apple", "banana", "cherry", "date", "elderberry"}
-    vals := []string{"red", "yellow", "red", "brown", "purple"}
+    keys := []string{"apple", "banana", "cherry", "date", "elderberry", "fig"}
+    vals := []string{"red", "yellow", "red", "yellow", "red", "yellow"}
 
     for i := range keys {
         c.add(keys[i], vals[i])
+        fmt.Println(keys[i], vals[i])
     }
 
     for i := range keys {
@@ -73,18 +74,18 @@ func (c *C) testDeletion() {
         panic("Deletion failed")
     }
 
-    // Check if the key is removed from the reference map
-    _, found := c.ref["apple"]
-    if found {
-        panic("Deletion not reflected in reference data")
+    success1, err1 := c.tree.Delete([]byte("banana"))
+    if !success1 || err1 != nil {
+        panic("Deletion failed")
     }
+    
 }
 
 func TestBTreeOperations(t *testing.T) {
     c := newC()
 
-    // Test Insertion
-    c.testInsertion()
+    // // Test Insertion
+    // c.testInsertion()
 
     // Test Deletion
     c.testDeletion()

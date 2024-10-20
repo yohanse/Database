@@ -6,9 +6,8 @@ import (
 
 // returns the first kid node whose range intersects the key. (kid[i] <= key)
 func nodeLookupLE(node BNode, key []byte) uint16 {
-	right := node.nkeys()
+	right := node.nkeys() - 1
     left := uint16(0)
-
 	for left < right {
 		mid := (left + right + 1) / 2
 		cmp := bytes.Compare(node.getKey(mid), key)

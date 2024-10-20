@@ -3,6 +3,7 @@ package b_plus_tree
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 )
 
 func leafInsert(new BNode, old BNode, idx uint16, key []byte, val []byte) {
@@ -98,7 +99,6 @@ func nodeSplit3(old BNode) (uint16, [3]BNode) {
 
 func treeInsert(tree *BTree, node BNode, key []byte, val []byte) BNode {
 	new := BNode(make([]byte, 2*BTREE_PAGE_SIZE))
-
 	idx := nodeLookupLE(node, key)
 	switch node.btype() {
 		case BNODE_LEAF:
@@ -125,15 +125,16 @@ func nodeInsert(tree *BTree, new BNode, node BNode, idx uint16, key []byte, val 
 
 func (tree *BTree) Insert(key []byte, val []byte) {
 	if tree.Root == 0 {
+		fmt.Println("Root is 0")
 		root := BNode(make([]byte, BTREE_PAGE_SIZE))
-		root.setHeaders(BNODE_LEAF, 1)
-
+		root.setHeaders(BNODE_LEAF, 2)
+		
 		nodeAppendKV(root, 0, 0, nil, nil)
 		nodeAppendKV(root, 1, 0, key, val)
 		tree.Root = tree.New(root)
 		return 
 	}
-
+	fmt.Println("root", tree.Root)
 	node := treeInsert(tree, tree.Get(tree.Root), key, val)
 	nsplit, split := nodeSplit3(node)
 	tree.Del(tree.Root)

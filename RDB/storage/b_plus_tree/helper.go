@@ -40,7 +40,7 @@ func (node BNode) setPtr(idx uint16, val uint64) {
 
 // offsetPos returns the position of the nth offset relative to the whole node.
 func offsetPos(node BNode, idx uint16) uint16 {
-	if idx < 1 || idx > node.nkeys() {
+	if idx > node.nkeys() {
 		panic("index out of range")
 	}
 	return HEADER + 8*node.nkeys() + 2*(idx - 1)
@@ -58,14 +58,14 @@ func (node BNode) setOffset(idx uint16, val uint16) {
 
 // kvPos returns the position of the nth KV pair relative to the whole node.
 func (node BNode) KvPos(idx uint16) uint16 {
-	if idx < 1 || idx > node.nkeys() {
+	if idx > node.nkeys() {
 		panic("index out of range")
 	}
 	return HEADER + 8*node.nkeys() + 2*node.nkeys() + node.getOffSet(idx)
 }
 
 func (node BNode) getKey(idx uint16) []byte {
-	if idx < 1 || idx > node.nkeys() {
+	if idx >= node.nkeys() {
 		panic("index out of range")
 	}
 
@@ -75,7 +75,7 @@ func (node BNode) getKey(idx uint16) []byte {
 }
 
 func (node BNode) getVal(idx uint16) []byte {
-	if idx < 1 || idx > node.nkeys() {
+	if idx >= node.nkeys() {
 		panic("index out of range")
 	}
 
