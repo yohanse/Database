@@ -3,13 +3,11 @@ package b_plus_tree
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 )
 
 func leafInsert(new BNode, old BNode, idx uint16, key []byte, val []byte) {
 	new.setHeaders(BNODE_LEAF, old.nkeys() + 1)
 	nodeAppendRange(new, old, 0, 0, idx)
-	fmt.Println("leafInsert: ", key, val)
 	nodeAppendKV(new, idx, 0, key, val)
 	nodeAppendRange(new, old, idx+1, idx, old.nkeys()-idx)
 }
@@ -125,7 +123,6 @@ func nodeInsert(tree *BTree, new BNode, node BNode, idx uint16, key []byte, val 
 }
 
 func (tree *BTree) Insert(key []byte, val []byte) {
-	fmt.Println("Inserting key: ", key, "Value: ", val)
 	if tree.Root == 0 {
 		root := BNode(make([]byte, BTREE_PAGE_SIZE))
 		root.setHeaders(BNODE_LEAF, 2)

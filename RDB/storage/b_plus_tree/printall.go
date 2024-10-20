@@ -3,7 +3,6 @@ package b_plus_tree
 import "fmt"
 
 func (tree *BTree) PrintAll(node BNode) {
-	fmt.Println(node.btype())
 	if node.btype() == BNODE_LEAF {
 		nkeys := node.nkeys()
 		for i := uint16(0); i < nkeys; i++ {

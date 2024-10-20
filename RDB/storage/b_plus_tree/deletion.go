@@ -2,6 +2,7 @@ package b_plus_tree
 
 import (
 	"fmt"
+	"bytes"
 )
 
 // remove a key from a leaf node
@@ -9,6 +10,11 @@ func leafDelete(new BNode, old BNode, idx uint16) {
 	new.setHeaders(BNODE_LEAF, old.nkeys() - 1)
 	nodeAppendRange(new, old, 0, 0, idx)
 	nodeAppendRange(new, old, idx, idx+1, old.nkeys()-idx-1)
+}
+
+func leafCopy(new BNode, old BNode) {
+	new.setHeaders(BNODE_LEAF, old.nkeys())
+	nodeAppendRange(new, old, 0, 0, old.nkeys())
 }
 
 // merge 2 nodes into 1
@@ -64,8 +70,12 @@ func treeDelete(tree *BTree, node BNode, key []byte) BNode {
 	fmt.Println(node.btype())
 	switch node.btype() {
 		case BNODE_LEAF:
-			fmt.Println("Leaf")
-			leafDelete(new, node, idx)
+			fmt.Println("Leaf", string(node.getKey(idx)), string(key))
+			if idx < node.nkeys() && bytes.Equal(key, node.getKey(idx)) {
+				leafDelete(new, node, idx)
+			} else {
+				leafCopy(new, node)
+			}
 		case BNODE_NODE:
 			nodeDelete(tree, node, idx, key)
 		default:
