@@ -1,4 +1,4 @@
-package rdb
+package b_plus_tree
 
 type BTree struct {
     // pointer (a nonzero page number)
