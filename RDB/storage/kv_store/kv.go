@@ -17,9 +17,9 @@ import (
 //     total: The total size of the memory-mapped file. This size can be larger than the actual file 
 //     size, which allows for extending the file in the future.
 
-//     chunks: A slice of byte slices ([][]byte). This means that you are mapping the file into memory 
-//     in chunks, rather than mapping the entire file continuously. Each chunk represents a part of 
-//     the file that has been memory-mapped.
+//     chunks: A slice of byte slices ([][]byte). This means that you are mapping the file into 
+// memory in chunks, rather than mapping the entire file continuously. Each chunk represents a 
+// part of the file that has been memory-mapped.
 
 // page struct:
 //     flushed: Tracks how many pages of the database have been flushed to disk. This is likely used to 
