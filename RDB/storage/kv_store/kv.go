@@ -33,6 +33,7 @@ type KV struct {
 	path string
 	fd int
 	tree b_plus_tree.BTree
+    free FreeList
 
 	failed bool
 
