@@ -4,6 +4,7 @@ import (
 	"rdb/storage/b_plus_tree"
 )
 
+// `BTree.get`, read a page
 // func pageRead(p *page, n uint64) ([]byte, error)
 //     The pageRead function retrieves a page of data from the memory-mapped chunks based on a page 
 //     number pointer
