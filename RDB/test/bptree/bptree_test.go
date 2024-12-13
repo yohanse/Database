@@ -86,9 +86,9 @@ func (c *C) testDeletion() {
 func TestBTreeOperations(t *testing.T) {
     c := newC()
 
-    // // Test Insertion
-    // c.testInsertion()
+    // Test Insertion
+    c.testInsertion()
 
-    // Test Deletion
-    c.testDeletion()
+    // // Test Deletion
+    // c.testDeletion()
 }
