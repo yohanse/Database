@@ -45,7 +45,11 @@ type KV struct {
     }
 
     page struct {
-        flushed uint64   // database size in number of pages
-        temp    [][]byte // newly allocated pages
+        flushed uint64
+        // database size in number of pages
+        nappend uint64
+        // number of pages to be appended
+        updates map[uint64][]byte // pending updates, including appended pages
+        temp    [][]byte          // newly allocated pages
     }
 }
