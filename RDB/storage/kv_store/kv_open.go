@@ -9,8 +9,8 @@ func (db *KV) Open() error { // open or create
     db.tree.New = db.pageAppend // apppend a page
     db.tree.Del = func(uint64) {}
 
-    db.free.get = db.pageRead      // read a page
-    db.free.new = db.pageAppend    // append a page
-    db.free.set = db.pageWrite  
+    db.free.Get = db.pageRead      // read a page
+    db.free.New = db.pageAppend    // append a page
+    db.free.Set = db.pageWrite  
 	return nil
 }

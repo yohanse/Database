@@ -5,7 +5,7 @@ func flPop(fl *FreeList) (ptr uint64, head uint64) {
     if fl.headSeq == fl.maxSeq {
         return 0, 0
     }
-    node := LNode(fl.get(fl.headPage))
+    node := LNode(fl.Get(fl.headPage))
     ptr = node.getPtr(seq2idx(fl.headSeq)) // item
     fl.headSeq++
     // move to the next one if the head node is empty
