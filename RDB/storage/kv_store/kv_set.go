@@ -6,9 +6,6 @@ package kvstore
 
 func (db *KV) Set(key []byte, val []byte) error {
     meta := saveMeta(db) // save the in-memory state (tree root)
-	err := db.tree.Insert(key, val)
-    if err != nil {
-        return err // length limit
-    }
+	db.tree.Insert(key, val)
     return updateOrRevert(db, meta)
 }
