@@ -2,6 +2,7 @@ package kvstore
 
 import (
 	"rdb/storage/b_plus_tree"
+    "rdb/storage/linked_list"
 )
 
 // KV Struct
@@ -34,7 +35,7 @@ type KV struct {
 	path string
 	fd int
 	tree b_plus_tree.BTree
-    free FreeList
+    free linkedlist.FreeList
 
 	failed bool
 
