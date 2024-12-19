@@ -6,6 +6,8 @@ package kvstore
 func readRoot(db *KV, fileSize int64) error {
     if fileSize == 0 { // empty file
         db.page.flushed = 1 // the meta page is initialized on the 1st write
+        db.free.HeadPage = 1 // the 2nd page
+        db.free.TailPage = 1
         return nil
     }
     // read the page
